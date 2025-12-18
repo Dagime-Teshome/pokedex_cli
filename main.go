@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/Dagime-Teshome/pokedex_cli/repl"
 
 func main() {
-	fmt.Println("Hello, World!")
+	repl.StartRepl()
 }
