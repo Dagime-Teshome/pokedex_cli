@@ -8,6 +8,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/Dagime-Teshome/pokedex_cli/internal/pokecache"
 )
 
 type cliCommand struct {
@@ -35,6 +38,8 @@ func (c *config) setNext(s *string) {
 	}
 	c.next = *s
 }
+
+var cache = pokecache.Newcache(5 * time.Second)
 
 var commandsMap = map[string]cliCommand{
 	"exit": {
@@ -155,20 +160,32 @@ func executeCommand(command string, conf *config) {
 }
 
 func getMap(url string) (*locations, error) {
-	res, err := http.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("Error making request to :%s.got %s", url, err.Error())
-	}
-	body, err := io.ReadAll(res.Body)
-	res.Body.Close()
-	if res.StatusCode > 299 {
-		return nil, fmt.Errorf("Status: %s when making Request to %s", res.Status, url)
+	var body []byte
+	data, exists := cache.Get(url)
+	if !exists {
+
+		res, err := http.Get(url)
+		if err != nil {
+			return nil, fmt.Errorf("Error making request to :%s.got %s", url, err.Error())
+		}
+		body, err = io.ReadAll(res.Body)
+		res.Body.Close()
+		if res.StatusCode > 299 {
+			return nil, fmt.Errorf("Status: %s when making Request to %s", res.Status, url)
+		}
+		if err != nil {
+			return nil, err
+		}
+		cache.Add(url, body)
+		for key, _ := range cache.Data {
+			fmt.Println("key-----------", key)
+		}
+	} else {
+		fmt.Println("found in cache", url)
+		body = data
 	}
 	locations := locations{}
 	json.Unmarshal(body, &locations)
-	if err != nil {
-		return nil, err
-	}
 	return &locations, nil
 }
 
