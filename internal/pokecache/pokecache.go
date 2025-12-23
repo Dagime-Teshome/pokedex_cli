@@ -5,17 +5,7 @@ import (
 	"time"
 )
 
-type cacheEntry struct {
-	CreatedAt time.Time
-	Val       []byte
-}
-
-type cache struct {
-	mutex *sync.Mutex
-	Data  map[string]cacheEntry
-}
-
-func (c *cache) Add(key string, val []byte) {
+func (c *Cache) Add(key string, val []byte) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	cacheEntry := cacheEntry{
@@ -26,7 +16,7 @@ func (c *cache) Add(key string, val []byte) {
 
 }
 
-func (c *cache) Get(key string) ([]byte, bool) {
+func (c *Cache) Get(key string) ([]byte, bool) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	value, exists := c.Data[key]
@@ -34,7 +24,7 @@ func (c *cache) Get(key string) ([]byte, bool) {
 
 }
 
-func (c *cache) reapLoop(interval time.Duration) {
+func (c *Cache) reapLoop(interval time.Duration) {
 	ticker := time.NewTicker(interval)
 
 	for range ticker.C {
@@ -42,7 +32,7 @@ func (c *cache) reapLoop(interval time.Duration) {
 	}
 }
 
-func (c *cache) reap(now time.Time, last time.Duration) {
+func (c *Cache) reap(now time.Time, last time.Duration) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	for k, v := range c.Data {
@@ -52,11 +42,11 @@ func (c *cache) reap(now time.Time, last time.Duration) {
 	}
 }
 
-func Newcache(interval time.Duration) cache {
-	newCache := cache{
+func Newcache(interval time.Duration) *Cache {
+	newCache := Cache{
 		Data:  make(map[string]cacheEntry),
 		mutex: &sync.Mutex{},
 	}
 	go newCache.reapLoop(interval)
-	return newCache
+	return &newCache
 }
