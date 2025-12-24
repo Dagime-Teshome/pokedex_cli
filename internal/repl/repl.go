@@ -33,13 +33,30 @@ var commandsMap = map[string]cliCommand{
 		description: "Navigates to the previous list of locations",
 		callback:    commands.CommandMapB,
 	},
+	"explore": {
+		name:        "explore",
+		description: "Shows list of pokemon located in an area",
+		callback:    commands.Explore,
+	},
+	"catch": {
+		name:        "catch",
+		description: "Attempts to catch named pokemon",
+		callback:    commands.Catch,
+	},
+	"inspect": {
+		name:        "inspect",
+		description: "list data on caught pokemon",
+		callback:    commands.Inspect,
+	},
 }
 
 func StartRepl() {
+	pokeDex := make(map[string]shared.Pokemon)
 	configVar := shared.Config{
 		Previous: "",
 		Next:     "",
 		Cache:    *pokecache.Newcache(10 * time.Second),
+		PokeDex:  pokeDex,
 	}
 	reader := bufio.NewScanner(os.Stdin)
 	for {
@@ -49,8 +66,10 @@ func StartRepl() {
 		if len(words) == 0 {
 			continue
 		}
-
 		commandName := words[0]
+		if len(words) > 1 {
+			configVar.Data = words[1]
+		}
 		executeCommand(commandName, &configVar)
 	}
 }

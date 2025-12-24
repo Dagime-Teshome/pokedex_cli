@@ -8,6 +8,8 @@ type Config struct {
 	Previous string
 	Next     string
 	Cache    pokecache.Cache
+	Data     string
+	PokeDex  map[string]Pokemon
 }
 
 func (c *Config) SetPrev(s *string) {
@@ -35,4 +37,11 @@ type Locations struct {
 type result struct {
 	Name string
 	Url  string
+}
+
+type Pokemon struct {
+	Id             int    `json:"id"`
+	Name           string `json:"name"`
+	Url            string `json:"url"`
+	BaseExperience int    `json:"base_experience"`
 }
