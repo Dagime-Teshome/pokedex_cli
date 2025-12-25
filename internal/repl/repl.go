@@ -48,6 +48,11 @@ var commandsMap = map[string]cliCommand{
 		description: "list data on caught pokemon",
 		callback:    commands.Inspect,
 	},
+	"pokedex": {
+		name:        "pokedex",
+		description: "list of pokemon found in pokedex",
+		callback:    commands.Pokedex,
+	},
 }
 
 func StartRepl() {
