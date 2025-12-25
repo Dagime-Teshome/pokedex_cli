@@ -16,7 +16,15 @@ func Inspect(conf *shared.Config) error {
 		return nil
 	}
 	fmt.Printf("Name: %s\n", value.Name)
-	fmt.Printf("Url: %s\n", value.Url)
-	fmt.Printf("Base XP: %d\n", value.BaseExperience)
+	fmt.Printf("Height: %d\n", value.Height)
+	fmt.Printf("Weight: %d\n", value.Weight)
+	fmt.Println("Stats: ")
+	for _, value := range value.Stats {
+		fmt.Printf("  - %s : %d\n", value.Stat.Name, value.Base_Stat)
+	}
+	fmt.Println("Types: ")
+	for _, value := range value.Types {
+		fmt.Printf("  - %s\n", value.Type.Name)
+	}
 	return nil
 }
