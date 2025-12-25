@@ -28,7 +28,7 @@ func Catch(conf *shared.Config) error {
 		fmt.Println("Pokemon not found (may not exist)")
 		return nil
 	}
-	pokemon := Pokemon{}
+	pokemon := shared.Pokemon{}
 	err = json.Unmarshal(body, &pokemon)
 	if err != nil {
 		return fmt.Errorf("Error marshaling :%s", err)
